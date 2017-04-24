@@ -3,9 +3,9 @@ import java.util.List;
 
 public class Path {
     List<Integer> path;
-    Integer cost;
+    Float cost;
 
-    public Path(List<Integer> path, Integer cost) {
+    public Path(List<Integer> path, Float cost) {
         this.path = new ArrayList<>(path);
         this.cost = cost;
     }
@@ -18,11 +18,18 @@ public class Path {
      */
     public Boolean CompareLoops(Path c) {
         if (c.path.size() == path.size()) {
-            for (int i : c.path) {
-                if (!path.contains(i))
-                    return false;
+
+            for (int i = 0; i < c.path.size() - 1; i++) {
+
+                if (path.contains(c.path.get(i))) {
+//                    System.out.println((path.indexOf(c.path.get(i))+1));
+//                    System.out.println(c.path.get(i == path.size() - 1 ? 0 : i+1));
+                    if (!(path.get(path.indexOf(c.path.get(i)) + 1) == c.path.get(i == path.size() - 1 ? 0 : i+1)))
+                        return false;
+                }
             }
-            return cost == c.cost;
+            return true;
+
         }
         return false;
 

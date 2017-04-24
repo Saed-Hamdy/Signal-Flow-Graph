@@ -9,8 +9,8 @@ public class SFGController {
     static List<Node> nodes;
     public static List<Path> paths;
     public static List<Path> loops;
-    public static List<Integer> delta;
-    public static int deltaAll;
+    public static List<Float> delta;
+    public static Float deltaAll;
     private static HashMap<Path, List<Path>> touchedLoopsTable;
 
     public SFGController() {
@@ -32,7 +32,7 @@ public class SFGController {
      * @param destination
      * @param cost
      */
-    public void addEdge(Integer home, Integer destination, int cost) {
+    public void addEdge(Integer home, Integer destination, Float cost) {
         Node des = nodes.get(destination);
         Edge e = new Edge(des, cost);
         nodes.get(home).childs.add(e);
@@ -44,17 +44,17 @@ public class SFGController {
      * @param des
      * @return
      */
-    public int getTransferFn(int home, int des) {
+    public String getTransferFn(int home, int des) {
         paths = dfs(nodes.get(home), nodes.get(des), new ArrayList<Path>());
         System.out.println("loops");
         if(paths.size()==0)
-            return 0;
+            return "";
         loops = findLoops();
         System.out.println("loops");
         for (int i = 0; i < loops.size(); i++) {
             for(Integer ii: loops.get(i).path)
                  System.out.print(" "+ii);
-           System.out.println("");
+           System.out.println(" cost :"+loops.get(i).cost);
         }
        
         createTouchedLoopsTable(loops);
@@ -62,11 +62,11 @@ public class SFGController {
         delta=new ArrayList<>();
         for(Path p: paths)
            System.out.println( delta.add(getDelta(p.path))); 
-        Integer result =0;
+        Float result =new Float(0);
         for (int i = 0; i < paths.size(); i++) {
             result+=paths.get(i).cost*delta.get(i);
         }        
-        return result/deltaAll;
+        return String.valueOf(result/deltaAll);
     }
 
     private void createTouchedLoopsTable(List<Path> loops) {
@@ -94,13 +94,13 @@ public class SFGController {
                 if (l.get(i).CompareLoops(l.get(j))) // remove same Loops
                     l.remove(j--);
             }
-
+        
         return l;
 
     }
 
-    public Integer getDelta(List<Integer> exp) {
-        int del = 1;
+    public Float getDelta(List<Integer> exp) {
+        Float del = new Float(1);
         List<Path> ll = new ArrayList<>(loops);
         for (int node : exp)
             for (int i = 0; i < ll.size(); i++)
@@ -117,8 +117,8 @@ public class SFGController {
                 del += (sign * p.cost);
             sign *= -1;
         }
-
-        return del;
+        System.out.println(del);
+        return  del;
 
     }
 
@@ -136,7 +136,7 @@ public class SFGController {
 
     static void combinations2(List<Path> loops, int len, int startPosition, Integer[] result, List<Path> unTouched) {
         if (len == 0) {
-            int cost=1;
+            Float cost=new Float(1);
             for (int i = 0; i < result.length; i++) {
                 cost*=loops.get(result[i]).cost;
             }
@@ -165,7 +165,7 @@ public class SFGController {
      * @param cost
      * @param paths
      */
-    private static void dfs_rec(boolean[] visited, Edge v, Node d, List<Integer> path, int cost, List<Path> paths) {
+    private static void dfs_rec(boolean[][] visited, Edge v, Node d, List<Integer> path, Float cost, List<Path> paths) {
         path.add(v.destination.lable);
         cost *= v.cost;
 
@@ -175,12 +175,14 @@ public class SFGController {
                 System.out.print(path.get(i) + " ");
             }
             System.out.println("  cost = " + cost);
-        } else if (!visited[v.destination.lable]) { // added here to support
+        } else if (!visited[0][v.destination.lable]) { // added here to support
                                                     // self loops(not only 1
                                                     // length)
-            visited[v.destination.lable] = true;
+            visited[0][v.destination.lable] = true;
             for (Edge w : v.destination.childs) {
-                // if (!visited[w.destination.lable]) {
+                if (visited[0][w.destination.lable]) {
+                    visited[1][w.destination.lable]=true;
+                }
                 dfs_rec(visited, w, d, path, cost, paths);
                 // }
 
@@ -188,17 +190,18 @@ public class SFGController {
         }
         path.remove(path.size() - 1);
         cost /= v.cost;
-       // visited[v.destination.lable] = false;
+        visited[0][v.destination.lable] = visited[1][v.destination.lable];
+        visited[1][v.destination.lable]=false;
     }
 
     public static List<Path> dfs(Node s, Node d, List<Path> paths) {
         int n = nodes.size();
-        boolean[] visited = new boolean[n];
+        boolean[][] visited = new boolean[2][n];
 
         List<Integer> path = new ArrayList<Integer>();
-        visited[s.lable] = true;
+        visited[0][s.lable] = true;
         path.add(s.lable);
-        int cost = 1;
+        Float cost = new Float(1);
 
         for (Edge w : s.childs)
             dfs_rec(visited, w, d, path, cost, paths);
@@ -216,18 +219,28 @@ public class SFGController {
         sf.addNode();
         sf.addNode();
         sf.addNode();
-        sf.addEdge(0, 1, 10);
-        sf.addEdge(1, 2, 10);
-        sf.addEdge(2, 3, 10);
-        sf.addEdge(3, 4, 10);
-        sf.addEdge(4, 5, 10);
-        sf.addEdge(1, 3, 5);
-        sf.addEdge(4, 2, -9);
-        sf.addEdge(2, 5, 5);
-        sf.addEdge(2, 2, -33);
-        sf.addEdge(2, 1, 10);
-        sf.addEdge(4, 3, 10);
-        sf.getTransferFn(0, 2);
+//        sf.addNode();
+//        sf.addNode();
+//        sf.addNode();
+//        sf.addNode();
+//        sf.addNode();
+        sf.addEdge(0, 1, new Float(1));
+        sf.addEdge(1, 2, new Float(1));
+        sf.addEdge(2, 3, new Float(1));
+        sf.addEdge(3, 4, new Float(1));
+        sf.addEdge(4, 5, new Float(1));
+ //       sf.addEdge(4, 3, new Float(-1));
+        sf.addEdge(4, 3, new Float(-1));
+        sf.addEdge(2, 1, new Float(-1));
+        sf.addEdge(4, 1, new Float(-1));
+        sf.addEdge(1, 3, new Float(1));
+//        sf.addEdge(1, 3, 5);
+//        sf.addEdge(4, 2, -9);
+//        sf.addEdge(2, 5, 5);
+//        sf.addEdge(2, 2, -33);
+//        sf.addEdge(2, 1, 10);
+//        sf.addEdge(4, 3, 10);
+        System.out.println("transfer fn : "+sf.getTransferFn(0,5));
  //        sf.addEdge(2, 3, 10);
         // sf.addEdge(3, 4, 10);
         // sf.addEdge(4, 5, 10);

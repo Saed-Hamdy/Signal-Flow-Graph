@@ -2,8 +2,8 @@
 public class Edge {
 
     Node destination ;
-    int cost;
-    public Edge(Node des,int cost) {
+    Float cost;
+    public Edge(Node des,Float cost) {
         this.cost=cost;
         destination=des;
     }
