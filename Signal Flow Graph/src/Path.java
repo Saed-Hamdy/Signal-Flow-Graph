@@ -11,28 +11,23 @@ public class Path {
     }
 
     /**
-     * this should be change to check the sequence
+     * now it is correct
      * 
      * @param c
      * @return
      */
     public Boolean CompareLoops(Path c) {
-        if (c.path.size() == path.size()) {
-
+        if (c.path.size() == path.size() && c.cost.equals(cost)) {
             for (int i = 0; i < c.path.size() - 1; i++) {
-
                 if (path.contains(c.path.get(i))) {
-//                    System.out.println((path.indexOf(c.path.get(i))+1));
-//                    System.out.println(c.path.get(i == path.size() - 1 ? 0 : i+1));
-                    if (!(path.get(path.indexOf(c.path.get(i)) + 1) == c.path.get(i == path.size() - 1 ? 0 : i+1)))
+                    if (!(path.get(path.indexOf(c.path.get(i)) + 1) == c.path.get(i == path.size() - 1 ? 0 : i + 1)))
                         return false;
-                }
+                } else
+                    return false;
             }
             return true;
-
         }
         return false;
-
     }
 
     public Boolean touched(Path p2) {
