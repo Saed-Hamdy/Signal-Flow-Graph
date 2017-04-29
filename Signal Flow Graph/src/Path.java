@@ -4,6 +4,7 @@ import java.util.List;
 public class Path {
     List<Integer> path;
     Float cost;
+    int name ;
 
     public Path(List<Integer> path, Float cost) {
         this.path = new ArrayList<>(path);
